@@ -3,7 +3,12 @@ function ShortUrlHandler() {
 
   this.testShortUrl = (url) => {
     let regex = /^(http|https):\/\/[^ "]+$/i
-    return { passed: regex.test(url) }
+    return regex.test(url)
+  }
+
+  this.testAllNumbers = (short_url) => {
+    let regex = /(\d\d\d+)/g
+    return regex.test(Number(short_url.trim))
   }
 
   this.getSafeUrl = (url) => {

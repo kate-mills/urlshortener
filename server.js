@@ -29,14 +29,9 @@ app.get('/api/hello', function (req, res) {
 app.post('/api/shorturl', (req, res) => {
   let { url } = req.body
 
-  if (!url) return res.json({ error: 'invalid url' })
-
-  let { passed } = urlHandler.testShortUrl(url)
-
-  if (!passed) {
+  if (!url || !urlHandler.testShortUrl(url)) {
     return res.json({ error: 'invalid url' })
   }
-
   let { original_url, short_url } = urlHandler.createOrUpdateUrl(url)
 
   return res.json({ original_url, short_url })
