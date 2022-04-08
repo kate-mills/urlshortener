@@ -1,19 +1,24 @@
 function ShortUrlHandler() {
-  this.db = []
+  this.urls = []
 
-  this.testShortUrl = (url) => {
+  this.isValidUrl = (url) => {
     let regex = /^(http|https):\/\/[^ "]+$/i
     return regex.test(url)
   }
 
-  this.testAllNumbers = (short_url) => {
-    let regex = /(\d\d\d+)/g
-    return regex.test(Number(short_url.trim))
+  this.isValidId = (urlId) => {
+    let regex = /(\d)/g
+    let parsedId =  parseInt(urlId) 
+
+    return (parsedId > this.urls.length -1)
+      ? false
+      : regex.test(parseFloat(urlId))
   }
 
   this.getSafeUrl = (url) => {
     let regex = /^(http|https):\/\/[^ "]+$/i
-    let [matched, ...rest] = url.match(regex)
+    let [matched, ...rest] = url.toLowerCase().trim().match(regex)
+
     if (matched[matched.length - 1] == '/') {
       matched = matched.slice(0, matched.length - 1)
       return matched
@@ -21,19 +26,17 @@ function ShortUrlHandler() {
     return url
   }
 
-  this.createOrUpdateUrl = (url) => {
-    url = url.toLowerCase().trim()
-    url = this.getSafeUrl(url)
+  this.findBySafeUrl = (url) => {
+    let original_url = this.getSafeUrl(url)
+    let short_url = this.urls.indexOf(original_url)
 
-    if (this.db[url]) {
-      let { id } = this.db[url]
-      return { short_url: id, original_url: url }
+    if (!(short_url === -1)){
+      return {short_url, original_url }
     }
-    let id = this.db.length + 100
-    this.db[url] = { url, id }
-    this.db.push(this.db[url])
 
-    return { short_url: id, original_url: url }
+    short_url = this.urls.length
+    this.urls.push(original_url)
+    return { short_url, original_url }
   }
 }
 

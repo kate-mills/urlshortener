@@ -29,12 +29,21 @@ app.get('/api/hello', function (req, res) {
 app.post('/api/shorturl', (req, res) => {
   let { url } = req.body
 
-  if (!url || !urlHandler.testShortUrl(url)) {
+  if (!url || !urlHandler.isValidUrl(url)) {
     return res.json({ error: 'invalid url' })
   }
-  let { original_url, short_url } = urlHandler.createOrUpdateUrl(url)
+  let { original_url, short_url } = urlHandler.findBySafeUrl(url)
 
   return res.json({ original_url, short_url })
+})
+
+app.get('/api/shorturl/:id', (req, res) => {
+  let { id } = req.params
+  let error = 'No short URL found for the given input'
+
+  return urlHandler.isValidId(id)
+    ? res.redirect(301, urlHandler.urls[parseInt(id)])
+    : res.json({ error })
 })
 
 app.listen(port, function () {
